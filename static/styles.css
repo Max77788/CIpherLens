@@ -124,7 +124,7 @@ a:hover { border-bottom-color: var(--accent); }
   padding: 0 24px 80px;
 }
 .lens-narrow {
-  max-width: 640px;
+  max-width: 780px;
   margin: 0 auto;
 }
 
