@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block title %}Roadmap — Cipher Lens{% endblock %}
+
+{% block content %}
+<div class="lens-narrow">
+  <div class="hero-eyebrow">WHERE THIS IS GOING</div>
+  <h1>Cipher Lens is <em>v0.1</em>.</h1>
+  <p class="lead">
+    What you're using right now is a working beta — built fast, intentionally narrow in scope, sharpened by real feedback from the people testing it.
+    Here's what's being considered for what comes next. Nothing here is promised — these are candidates, not commitments. The actual roadmap will be shaped by what users actually want.
+  </p>
+
+  <div class="disclaimer-box" style="margin: 32px 0;">
+    <h3>How decisions get made</h3>
+    <p style="margin: 0;">
+      Cipher Lens isn't built to a roadmap from on high. It's built by an individual investor who's
+      iterating in public. If something on this list resonates — say so. If something is missing
+      that you'd actually use — say that too. The signal that moves an item from "considered" to
+      "shipping" is real users asking for it.
+    </p>
+  </div>
+
+  <h2>Currently being considered</h2>
+
+  <div class="roadmap-section">
+    <div class="roadmap-item">
+      <div class="roadmap-status status-soon">SOON</div>
+      <h3>Watchlists</h3>
+      <p>Save the tickers you care about. Re-score on demand without re-pasting every time. Persistent across sessions and devices.</p>
+    </div>
+
+    <div class="roadmap-item">
+      <div class="roadmap-status status-soon">SOON</div>
+      <h3>Bring your own API key</h3>
+      <p>Currently everyone shares the same data source with shared rate limits. Bring your own Finnhub or Alpha Vantage key (both have free tiers) and run as many scans as you want.</p>
+    </div>
+
+    <div class="roadmap-item">
+      <div class="roadmap-status status-considering">CONSIDERING</div>
+      <h3>Score history</h3>
+      <p>See how a stock's score has changed over the last few weeks. Was it green a month ago and now red? That's a story worth knowing before you act.</p>
+    </div>
+
+    <div class="roadmap-item">
+      <div class="roadmap-status status-considering">CONSIDERING</div>
+      <h3>Discovery mode</h3>
+      <p>Instead of pasting a list you already have, describe what you're looking for ("large-cap tech with a tailwind, no earnings in the next month") and get a starting list to research.</p>
+    </div>
+
+    <div class="roadmap-item">
+      <div class="roadmap-status status-considering">CONSIDERING</div>
+      <h3>Educational deep dives</h3>
+      <p>Short writeups on what each scoring category really means, the kinds of mistakes new investors make, and how to think about the signals the framework checks. Built into the tool, not buried in a blog.</p>
+    </div>
+
+    <div class="roadmap-item">
+      <div class="roadmap-status status-considering">CONSIDERING</div>
+      <h3>Mobile-optimized layout</h3>
+      <p>The current design is desktop-first. Works on mobile, but a layout designed for phones — quick scans during the day, compact cards, single-thumb navigation — is on the list.</p>
+    </div>
+  </div>
+
+  <h2>What Cipher Lens is NOT going to become</h2>
+
+  <p style="color: var(--text-dim); max-width: 65ch;">
+    Some features sound useful but cross lines that change what this tool is.
+    These are explicitly off the roadmap:
+  </p>
+
+  <div class="not-grid">
+    <div class="not-card">
+      <h3>Buy / sell recommendations</h3>
+      <p>Cipher Lens will never tell you to buy or sell a specific stock. That's investment advice — which requires a license, a fiduciary relationship, and a different posture toward your money.</p>
+    </div>
+
+    <div class="not-card">
+      <h3>Personalized portfolio tracking</h3>
+      <p>Logging your trades, tracking P&amp;L, surfacing exit signals — these belong in a system that knows your specific situation. Cipher Lens stays at the screening level.</p>
+    </div>
+
+    <div class="not-card">
+      <h3>Real-time price feeds</h3>
+      <p>Data comes from public sources, delayed 15–20 minutes during market hours. Building a real-time data pipeline costs serious money and creates expectations Cipher Lens isn't trying to meet.</p>
+    </div>
+
+    <div class="not-card">
+      <h3>Backtesting</h3>
+      <p>Showing "if you'd used this framework last year you'd have made X%" is technically possible and emotionally compelling — and statistically misleading. Past performance is not predictive, and we won't pretend otherwise.</p>
+    </div>
+  </div>
+
+  <h2>Have a suggestion?</h2>
+  <p style="color: var(--text-dim);">
+    Cipher Lens is in beta and small enough to actually respond to feedback. If you'd use a feature that isn't listed here — or if something on this list matters more to you than the others — let the maintainer know.
+    The list above is opinions, not promises. Real user demand changes the order.
+  </p>
+
+  <div style="margin-top: 40px; padding: 20px 24px; background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius);">
+    <div class="uppercase" style="margin-bottom: 8px;">Current version</div>
+    <div style="font-family: var(--font-mono); font-size: 14px;">v0.1 · launched May 2026 · scoring engine only · acknowledgment-gated · audit logged</div>
+  </div>
+</div>
+
+<style>
+.roadmap-section { margin: 24px 0 48px; }
+.roadmap-item {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 24px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border-soft);
+  align-items: start;
+}
+.roadmap-item:last-child { border-bottom: none; }
+.roadmap-status {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 30px;
+  text-align: center;
+  text-transform: uppercase;
+  width: fit-content;
+}
+.status-soon { background: var(--accent-soft); color: var(--accent); }
+.status-considering { background: var(--gray-soft); color: var(--text-dim); }
+.roadmap-item h3 { margin: 0 0 8px; font-size: 18px; }
+.roadmap-item p { margin: 0; color: var(--text-dim); font-size: 14.5px; }
+
+.not-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 24px 0 48px;
+}
+@media (max-width: 600px) {
+  .not-grid { grid-template-columns: 1fr; }
+  .roadmap-item { grid-template-columns: 1fr; gap: 8px; }
+}
+.not-card {
+  padding: 20px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--red);
+  border-radius: var(--radius);
+}
+.not-card h3 {
+  font-size: 15px;
+  margin: 0 0 8px;
+  color: var(--red);
+}
+.not-card p {
+  font-size: 13.5px;
+  color: var(--text-dim);
+  margin: 0;
+}
+</style>
+{% endblock %}

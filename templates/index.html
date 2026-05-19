@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Cipher Lens — A Second Opinion on Your Watchlist{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="hero-eyebrow">CIPHER LENS · BETA</div>
+  <h1>A structured <em>second opinion</em> on the stocks you're watching.</h1>
+  <p class="lead">
+    Paste your watchlist. Cipher Lens scores each stock against a multi-signal framework —
+    trend, momentum, volume, sector, fundamentals — and tells you what's strong,
+    what's mixed, and what to think twice about. Not advice. A framework.
+  </p>
+  <div class="hero-cta-row">
+    {% if acknowledged %}
+      <a href="{{ url_for('tool') }}" class="btn btn-primary btn-large">Open the tool →</a>
+      <a href="{{ url_for('how_it_works') }}" class="btn btn-ghost">How it works</a>
+    {% else %}
+      <a href="{{ url_for('acknowledgment') }}" class="btn btn-primary btn-large">Get started →</a>
+      <a href="{{ url_for('how_it_works') }}" class="btn btn-ghost">How it works</a>
+    {% endif %}
+  </div>
+</section>
+
+<section class="feature-grid">
+  <div class="feature-card">
+    <div class="uppercase" style="color: var(--accent);">01</div>
+    <h3>Paste your list</h3>
+    <p>Type in or paste up to 20 tickers. Standard stocks listed on major U.S. exchanges work.</p>
+  </div>
+  <div class="feature-card">
+    <div class="uppercase" style="color: var(--accent);">02</div>
+    <h3>See the rating</h3>
+    <p>Each ticker gets a green, yellow, or red rating with a one-line summary of what the framework saw.</p>
+  </div>
+  <div class="feature-card">
+    <div class="uppercase" style="color: var(--accent);">03</div>
+    <h3>Click for detail</h3>
+    <p>Expand any row to see how the stock scored across trend, momentum, volume, sector, and fundamental signals — with the actual technical readings.</p>
+  </div>
+</section>
+
+<section style="margin-top: 60px;">
+  <h2>What this is — and what it isn't</h2>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 20px;" class="is-isnt-grid">
+    <div>
+      <h3 style="color: var(--green); font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em;">What it is</h3>
+      <ul style="list-style: none; padding: 0; color: var(--text-dim); font-size: 14.5px;">
+        <li style="padding: 6px 0;">→ A scoring framework that runs the same checks every time</li>
+        <li style="padding: 6px 0;">→ A way to get a structured second opinion before you decide</li>
+        <li style="padding: 6px 0;">→ A learning tool — the categories teach you what to look at</li>
+        <li style="padding: 6px 0;">→ Free for now (rate-limited)</li>
+      </ul>
+    </div>
+    <div>
+      <h3 style="color: var(--red); font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em;">What it isn't</h3>
+      <ul style="list-style: none; padding: 0; color: var(--text-dim); font-size: 14.5px;">
+        <li style="padding: 6px 0;">✗ Investment advice or a buy/sell recommendation</li>
+        <li style="padding: 6px 0;">✗ A licensed financial advisory service</li>
+        <li style="padding: 6px 0;">✗ A guarantee — markets move, frameworks miss</li>
+        <li style="padding: 6px 0;">✗ A replacement for your own research</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+@media (max-width: 600px) {
+  .is-isnt-grid { grid-template-columns: 1fr !important; }
+}
+</style>
+{% endblock %}

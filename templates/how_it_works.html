@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+{% block title %}How Cipher Lens Works{% endblock %}
+
+{% block content %}
+<div class="lens-narrow">
+  <div class="hero-eyebrow">METHODOLOGY</div>
+  <h1>How Cipher Lens <em>thinks</em>.</h1>
+  <p class="lead">
+    Cipher Lens scores every stock against five signal categories drawn from
+    a structured investing framework. Here's the high-level methodology — the
+    principles, not the formulas.
+  </p>
+
+  <div class="principles-list">
+    <div class="principle">
+      <div class="principle-number">01</div>
+      <div>
+        <h3>Trend matters more than feelings</h3>
+        <p>A stock above its 50-day and 200-day moving averages is in an uptrend.
+        A stock below both is in a downtrend. Cipher Lens checks where the price
+        sits relative to its trend lines, whether the trend structure is healthy,
+        and how close the stock is to its 52-week high.</p>
+      </div>
+    </div>
+
+    <div class="principle">
+      <div class="principle-number">02</div>
+      <div>
+        <h3>Momentum has guardrails</h3>
+        <p>The RSI (Relative Strength Index) tells us if a stock is overbought,
+        oversold, or in a healthy range. Cipher Lens favors stocks with momentum
+        in a sustainable band — not overheated, not collapsing — and it pays
+        attention to the direction RSI is moving.</p>
+      </div>
+    </div>
+
+    <div class="principle">
+      <div class="principle-number">03</div>
+      <div>
+        <h3>Volume confirms or contradicts</h3>
+        <p>Big moves on weak volume are suspicious. Real conviction shows up
+        as participation. Cipher Lens compares today's volume to the recent
+        average to assess whether the current price action has real weight behind it.</p>
+      </div>
+    </div>
+
+    <div class="principle">
+      <div class="principle-number">04</div>
+      <div>
+        <h3>Sectors rise and fall together</h3>
+        <p>A great stock in a falling sector is still a stock in a falling sector.
+        Cipher Lens checks whether each ticker's sector is outperforming or
+        underperforming the S&amp;P 500 over the past three weeks. Stocks in
+        sectors with strong tailwinds get a more favorable read; stocks in
+        sectors with heavy headwinds get downgraded.</p>
+      </div>
+    </div>
+
+    <div class="principle">
+      <div class="principle-number">05</div>
+      <div>
+        <h3>Fundamentals anchor the analysis</h3>
+        <p>Technical signals alone aren't enough. Cipher Lens looks at analyst
+        price targets (is there meaningful upside?), market capitalization
+        (is this a serious company?), and analyst consensus (do the pros lean
+        bullish or bearish?). These don't dominate the score — but they prevent
+        chasing strong-looking charts on companies the market has soured on.</p>
+      </div>
+    </div>
+
+    <div class="principle">
+      <div class="principle-number">06</div>
+      <div>
+        <h3>Earnings windows are no-fly zones</h3>
+        <p>When a company reports earnings within the next 21 days, the score
+        downgrades automatically. Earnings reactions are unpredictable. Cipher
+        Lens treats the blackout window as a strong "wait until after the
+        report" signal — even for otherwise strong-looking stocks.</p>
+      </div>
+    </div>
+  </div>
+
+  <h2>What the ratings mean</h2>
+  <div style="display: grid; gap: 12px; margin: 16px 0 32px;">
+    <div style="padding: 14px 18px; background: var(--green-soft); border-left: 3px solid var(--green); border-radius: var(--radius-sm);">
+      <strong style="color: var(--green);">GREEN — Strong</strong>
+      <p style="margin: 4px 0 0; color: var(--text-dim); font-size: 14px;">
+        Most categories pass. The stock has multiple favorable signals working together. Still: do your own research.
+      </p>
+    </div>
+    <div style="padding: 14px 18px; background: var(--yellow-soft); border-left: 3px solid var(--yellow); border-radius: var(--radius-sm);">
+      <strong style="color: var(--yellow);">YELLOW — Mixed</strong>
+      <p style="margin: 4px 0 0; color: var(--text-dim); font-size: 14px;">
+        Some signals positive, others concerning. Worth a closer look, but not a clear winner. Often these stocks reward patience or need a catalyst.
+      </p>
+    </div>
+    <div style="padding: 14px 18px; background: var(--red-soft); border-left: 3px solid var(--red); border-radius: var(--radius-sm);">
+      <strong style="color: var(--red);">RED — Weak</strong>
+      <p style="margin: 4px 0 0; color: var(--text-dim); font-size: 14px;">
+        Multiple concerning signals. Could be a downtrend, weak sector, earnings blackout, or fundamental weakness. Worth knowing why before considering an entry.
+      </p>
+    </div>
+    <div style="padding: 14px 18px; background: var(--gray-soft); border-left: 3px solid var(--gray); border-radius: var(--radius-sm);">
+      <strong style="color: var(--gray);">NO DATA</strong>
+      <p style="margin: 4px 0 0; color: var(--text-dim); font-size: 14px;">
+        Could not fetch enough data to score. Often a misspelled ticker, a stock that's been delisted, or a thinly-traded name.
+      </p>
+    </div>
+  </div>
+
+  <h2>How to use Cipher Lens well</h2>
+  <p style="color: var(--text-dim); max-width: 65ch;">
+    A screening tool is only as good as the discipline of the person using it.
+    Here are habits worth adopting — true for any framework, not just this one.
+  </p>
+
+  <div class="usage-list">
+    <div class="usage-item">
+      <h3>Treat green as a starting point, not a destination</h3>
+      <p>A green rating means the framework saw multiple favorable signals together. It doesn't mean the stock will go up. Use the rating to decide where to spend your research time — then actually do the research.</p>
+    </div>
+
+    <div class="usage-item">
+      <h3>Look at the chart yourself</h3>
+      <p>Cipher Lens checks where the price sits relative to moving averages and the 52-week high. It can't see chart patterns, support and resistance levels, or how the stock behaved in past corrections. Pull up the actual chart on a free tool (TradingView, Yahoo Finance) and look at the last 6–12 months before you decide.</p>
+    </div>
+
+    <div class="usage-item">
+      <h3>Read the last earnings call before buying anything</h3>
+      <p>Earnings transcripts (free on Seeking Alpha and most company investor relations pages) tell you what management actually said about the business — and what analysts pressed them on. A green stock with weak guidance and analysts asking hard questions is a different proposition than a green stock with strong commentary.</p>
+    </div>
+
+    <div class="usage-item">
+      <h3>Check news within the last week</h3>
+      <p>Cipher Lens uses delayed market data. Major news in the last few days — earnings preannouncements, regulatory actions, management changes, sector-wide events — may not yet be reflected in the score. A 30-second news search on the ticker can save you from buying into a story that's already broken.</p>
+    </div>
+
+    <div class="usage-item">
+      <h3>Diversify across sectors, not just stocks</h3>
+      <p>If your green list is five tech stocks, you don't have five positions — you have one bet on tech with five tickers. Real diversification means different sectors with different macro drivers. A green rating in a tech stock plus a green rating in healthcare is more durable than two greens in the same sector.</p>
+    </div>
+
+    <div class="usage-item">
+      <h3>Use position sizing that lets you survive being wrong</h3>
+      <p>No framework is right every time. Cipher Lens will produce green ratings on stocks that go down. The question isn't whether you'll be wrong — it's whether your position size lets you stay in the game when you are. If a single position would meaningfully damage your capital if it dropped 20%, the position is too big regardless of how good the score looks.</p>
+    </div>
+
+    <div class="usage-item">
+      <h3>Don't act on the same day you scored</h3>
+      <p>The signals Cipher Lens checks change slowly. A stock that's green today will almost certainly still be green tomorrow. Sleeping on a decision is one of the most underrated forms of risk management available to retail investors. It costs nothing and prevents most impulse mistakes.</p>
+    </div>
+  </div>
+
+  <h2>Important limitations</h2>
+  <div class="disclaimer-box">
+    <h3>What this tool doesn't know</h3>
+    <p>Cipher Lens scores stocks. It does NOT consider:</p>
+    <ul style="color: var(--text-dim); font-size: 14px; padding-left: 20px; margin: 8px 0 12px;">
+      <li>Your portfolio composition or how a new position fits</li>
+      <li>Your risk tolerance, time horizon, or tax situation</li>
+      <li>Macroeconomic events not yet reflected in price</li>
+      <li>News in the last 24 hours (data lags)</li>
+      <li>Insider activity, short interest, or unusual options flow</li>
+      <li>Industry-specific factors that require human judgment</li>
+    </ul>
+    <p>A green rating doesn't mean buy. A red rating doesn't mean sell. They mean: "according to this framework, the technical and fundamental profile looks favorable / unfavorable right now." How you use that information is up to you.</p>
+  </div>
+
+  <h2>Data sources</h2>
+  <p style="color: var(--text-dim);">
+    Price data, technicals, sector classification, analyst targets, and earnings dates come from
+    Yahoo Finance via the <code>yfinance</code> library. Data may be delayed 15–20 minutes
+    during market hours. The tool has no special access to real-time feeds or insider information.
+  </p>
+
+  <div style="margin-top: 60px; text-align: center;">
+    {% if acknowledged %}
+      <a href="{{ url_for('tool') }}" class="btn btn-primary btn-large">Open the tool →</a>
+    {% else %}
+      <a href="{{ url_for('acknowledgment') }}" class="btn btn-primary btn-large">Get started →</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

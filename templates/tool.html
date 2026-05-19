@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+{% block title %}Score Your List — Cipher Lens{% endblock %}
+
+{% block content %}
+<div class="hero-eyebrow">CIPHER LENS · SCORING TOOL</div>
+<h1>Score your <em>watchlist</em>.</h1>
+<p class="lead">
+  Paste up to 20 tickers below. Cipher Lens scores each against the framework
+  and returns a rating + summary. Click any row to see the full breakdown.
+</p>
+
+<div class="tool-input-section">
+  <div class="form-group" style="margin: 0;">
+    <label for="tickers-input">Your tickers</label>
+    <textarea id="tickers-input" class="form-textarea"
+              placeholder="e.g.&#10;AAPL, MSFT, NVDA&#10;or one per line"
+              autofocus></textarea>
+    <div class="form-help">
+      Separate tickers with commas, spaces, or new lines. Standard U.S. listed stocks.
+      Max 20 per scan.
+    </div>
+  </div>
+  <div style="display: flex; gap: 12px; margin-top: 16px;">
+    <button id="score-btn" class="btn btn-primary" onclick="scoreList()">
+      Score these tickers →
+    </button>
+    <button class="btn btn-ghost" onclick="loadExample()">Try an example</button>
+  </div>
+</div>
+
+<div id="results-container">
+  <div class="results-empty">
+    Paste a list of tickers above and click <strong>Score these tickers</strong> to see results.
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const EXAMPLE_TICKERS = "AAPL, MSFT, NVDA, GOOGL, META, AMD, ORCL";
+
+function loadExample() {
+  document.getElementById('tickers-input').value = EXAMPLE_TICKERS;
+}
+
+async function scoreList() {
+  const btn = document.getElementById('score-btn');
+  const container = document.getElementById('results-container');
+  const input = document.getElementById('tickers-input').value.trim();
+
+  if (!input) {
+    showToast('Please enter at least one ticker.', true);
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Scoring…';
+  container.innerHTML = `
+    <div class="results-empty">
+      <span class="spinner"></span>
+      Fetching data and scoring… this may take 10–30 seconds.
+    </div>
+  `;
+
+  try {
+    const res = await fetch('/api/score', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({tickers: input})
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+
+    renderResults(data.results, data.scored_at_utc);
+  } catch (e) {
+    container.innerHTML = `<div class="error-box">Error: ${escapeHtml(e.message)}</div>`;
+    showToast('Scoring failed: ' + e.message, true);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = 'Score these tickers →';
+  }
+}
+
+function escapeHtml(s) {
+  if (s == null) return '';
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+function fmt(v, places, prefix, suffix, missing) {
+  if (v == null || (typeof v === 'number' && isNaN(v))) return missing || '—';
+  if (typeof v === 'number') {
+    return (prefix || '') + v.toFixed(places ?? 2) + (suffix || '');
+  }
+  return v;
+}
+
+function fmtSigned(v, places) {
+  if (v == null) return '—';
+  const s = v >= 0 ? '+' : '';
+  return s + v.toFixed(places ?? 2) + '%';
+}
+
+function fmtPrice(v) {
+  if (v == null) return '—';
+  return '$' + v.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+}
+
+function fmtCap(v) {
+  if (v == null) return '—';
+  if (v >= 1e12) return '$' + (v/1e12).toFixed(2) + 'T';
+  if (v >= 1e9)  return '$' + (v/1e9).toFixed(2)  + 'B';
+  if (v >= 1e6)  return '$' + (v/1e6).toFixed(0)  + 'M';
+  return '$' + v.toLocaleString();
+}
+
+function renderResults(results, scoredAt) {
+  const container = document.getElementById('results-container');
+  if (!results || results.length === 0) {
+    container.innerHTML = '<div class="results-empty">No results returned.</div>';
+    return;
+  }
+
+  const headerRow = `
+    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 16px;">
+      <div class="uppercase">${results.length} tickers scored</div>
+      <div class="muted small">${scoredAt}</div>
+    </div>
+  `;
+
+  const rows = results.map((r, idx) => {
+    const dailyClass = r.daily_pct > 0 ? 'up' : (r.daily_pct < 0 ? 'down' : '');
+    const dailyStr = r.daily_pct != null
+      ? `<span class="result-price-change ${dailyClass}">${fmtSigned(r.daily_pct)}</span>`
+      : '';
+
+    return `
+      <div class="result-row rating-${r.rating}" data-idx="${idx}">
+        <div class="result-header" onclick="toggleRow(${idx})">
+          <div class="result-ticker">${escapeHtml(r.ticker)}</div>
+          <div class="result-rating ${r.rating}">${r.rating === 'insufficient_data' ? 'no data' : r.rating}</div>
+          <div class="result-headline">${escapeHtml(r.headline)}</div>
+          <div class="result-price">
+            ${fmtPrice(r.price)}
+            ${dailyStr}
+          </div>
+          <div class="result-sector">${escapeHtml(r.sector || '—')}</div>
+          <div class="result-expand-icon">▾</div>
+        </div>
+        <div class="result-body">
+          ${renderResultBody(r)}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  container.innerHTML = headerRow + '<div class="fade-in">' + rows + '</div>';
+}
+
+function renderResultBody(r) {
+  // Notes (earnings blackout etc.)
+  const notesHtml = (r.notes && r.notes.length)
+    ? `<ul class="notes-list">${r.notes.map(n => `<li>${escapeHtml(n)}</li>`).join('')}</ul>`
+    : '';
+
+  // Errors (no price data etc.)
+  if (r.rating === 'insufficient_data') {
+    return `
+      <p class="muted">Could not fetch enough data to score ${escapeHtml(r.ticker)}.</p>
+      ${notesHtml}
+      ${r.errors && r.errors.length ? `<div class="muted smaller mono">Details: ${r.errors.map(escapeHtml).join('; ')}</div>` : ''}
+    `;
+  }
+
+  // Categories
+  const categoriesHtml = (r.categories || []).map(c => {
+    const pct = c.total > 0 ? (c.passed / c.total) : 0;
+    const cls = pct >= 0.75 ? 'full' : pct >= 0.4 ? 'partial' : 'weak';
+    return `
+      <div class="category-card">
+        <div class="category-card-header">
+          <div class="category-card-name">${escapeHtml(c.name)}</div>
+          <div class="category-card-score ${cls}">${c.passed}/${c.total}</div>
+        </div>
+        <div class="category-card-bar">
+          <div class="category-card-bar-fill" style="width: ${pct * 100}%;"></div>
+        </div>
+        <div class="category-card-summary">${escapeHtml(c.summary)}</div>
+      </div>
+    `;
+  }).join('');
+
+  // Technicals
+  const tech = [
+    {label: 'Price', value: fmtPrice(r.price)},
+    {label: 'Daily move', value: fmtSigned(r.daily_pct)},
+    {label: 'RSI (14)', value: fmt(r.rsi, 1) + (r.rsi_2d_ago != null ? ` <span class="muted">from ${fmt(r.rsi_2d_ago, 1)}</span>` : '')},
+    {label: '50-day MA', value: r.sma_50 ? fmtPrice(r.sma_50) + (r.price_vs_sma50_pct != null ? ` <span class="muted">(${fmtSigned(r.price_vs_sma50_pct, 1)})</span>` : '') : '—'},
+    {label: '200-day MA', value: r.sma_200 ? fmtPrice(r.sma_200) + (r.price_vs_sma200_pct != null ? ` <span class="muted">(${fmtSigned(r.price_vs_sma200_pct, 1)})</span>` : '') : '—'},
+    {label: '52w High', value: r.high_52w ? fmtPrice(r.high_52w) + (r.pct_off_52w_high != null ? ` <span class="muted">(-${r.pct_off_52w_high.toFixed(1)}%)</span>` : '') : '—'},
+    {label: 'Volume', value: r.volume_ratio != null ? r.volume_ratio.toFixed(2) + 'x avg' : '—'},
+    {label: 'Market cap', value: fmtCap(r.market_cap)},
+    {label: 'Sector', value: escapeHtml(r.sector || '—') + (r.sector_etf ? ` <span class="muted">(${r.sector_etf})</span>` : '')},
+    {label: 'Sector vs SPY (3wk)', value: r.sector_vs_spy_3wk != null ? fmtSigned(r.sector_vs_spy_3wk) : '—'},
+    {label: 'Earnings', value: r.earnings_date ? `${r.earnings_date}${r.days_to_earnings != null ? ` <span class="muted">(${r.days_to_earnings}d)</span>` : ''}` : '—'},
+  ];
+  const techHtml = tech.map(t => `
+    <div class="tech-item">
+      <div class="tech-label">${t.label}</div>
+      <div class="tech-value">${t.value}</div>
+    </div>
+  `).join('');
+
+  return `
+    <div class="category-grid">
+      ${categoriesHtml}
+    </div>
+    <div class="technical-grid">
+      ${techHtml}
+    </div>
+    ${notesHtml}
+  `;
+}
+
+function toggleRow(idx) {
+  const row = document.querySelector('.result-row[data-idx="' + idx + '"]');
+  if (row) row.classList.toggle('expanded');
+}
+
+// Allow pressing Cmd/Ctrl+Enter from textarea to submit
+document.getElementById('tickers-input').addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+    scoreList();
+  }
+});
+</script>
+{% endblock %}

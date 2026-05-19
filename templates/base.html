@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Cipher Lens — Score Your Stock List{% endblock %}</title>
+  <meta name="description" content="A second opinion on your watchlist. Cipher Lens scores stocks against a structured framework — not investment advice.">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='none' stroke='%23d4a857' stroke-width='6'/><circle cx='50' cy='50' r='10' fill='%23d4a857'/></svg>">
+</head>
+<body>
+  <header class="lens-header">
+    <div class="lens-header-inner">
+      <a href="{{ url_for('index') }}" class="lens-brand">
+        Cipher <span class="lens-mark">Lens</span>
+      </a>
+      <nav class="lens-nav">
+        <a href="{{ url_for('how_it_works') }}">How It Works</a>
+        <a href="{{ url_for('roadmap') }}">Roadmap</a>
+        {% if acknowledged or session.user_email %}
+          <a href="{{ url_for('tool') }}">Tool</a>
+          <a href="{{ url_for('my_profile') }}">Profile</a>
+          <span class="lens-user-pill">{{ session.user_name or session.user_email }}</span>
+        {% else %}
+          <a href="{{ url_for('acknowledgment') }}">Get Started</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <main class="lens-container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="lens-footer">
+    <div class="lens-footer-inner">
+      <div>
+        <span class="lens-brand">Cipher <span class="lens-mark">Lens</span></span>
+        <span class="muted small" style="margin-left: 12px;">v0.1 · Beta</span>
+      </div>
+      <div class="muted smaller">
+        Not financial advice · Educational tool only · <a href="{{ url_for('how_it_works') }}">Read disclaimer</a>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    function showToast(msg, isError) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast show' + (isError ? ' error' : '');
+      setTimeout(() => { t.className = 'toast'; }, 4500);
+    }
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

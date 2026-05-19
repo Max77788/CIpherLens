@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Acknowledgment — Cipher Lens{% endblock %}
+
+{% block content %}
+<div class="lens-narrow">
+  <div class="hero-eyebrow">STEP 01 · ACKNOWLEDGMENT</div>
+  <h1>Before you continue.</h1>
+  <p class="lead">
+    Cipher Lens is a screening tool — not investment advice. Please read this carefully.
+    By providing your name and email, you confirm you understand the terms below.
+  </p>
+
+  {% if errors %}
+    <div class="error-box">
+      <strong>Please fix the following:</strong>
+      <ul>
+        {% for e in errors %}<li>{{ e }}</li>{% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  <div class="disclaimer-box">
+    <h3>I understand and agree that:</h3>
+    <p style="margin-bottom: 12px;"><strong style="color: var(--text);">1. This is not financial advice.</strong> Cipher Lens is a screening and educational tool. The scores it produces are NOT recommendations to buy or sell any security. They are framework-based observations.</p>
+    <p style="margin-bottom: 12px;"><strong style="color: var(--text);">2. The author is not a licensed financial advisor.</strong> This tool was built by an individual investor for educational and personal use. No fiduciary relationship exists.</p>
+    <p style="margin-bottom: 12px;"><strong style="color: var(--text);">3. I am responsible for my own decisions.</strong> I will not place trades based solely on this tool's output. I will do my own research, consult licensed professionals when appropriate, and accept the consequences of my own choices.</p>
+    <p style="margin-bottom: 12px;"><strong style="color: var(--text);">4. This tool is for educated retail investors.</strong> I understand market risk, can afford to lose what I invest, and don't need a regulated advisor to interpret market data for me.</p>
+    <p style="margin-bottom: 12px;"><strong style="color: var(--text);">5. Data may be delayed or incomplete.</strong> Prices, fundamentals, and earnings dates come from third-party sources and may be 15-20 minutes delayed or occasionally wrong. The tool has no liability for data accuracy.</p>
+    <p style="margin: 0;"><strong style="color: var(--text);">6. The framework is one perspective, not gospel.</strong> Reasonable people disagree about what makes a stock attractive. The Cipher Lens framework reflects one investor's approach. Many great investments would score poorly here, and vice versa.</p>
+  </div>
+
+  <form method="POST" action="{{ url_for('acknowledgment') }}">
+    <div class="form-group">
+      <label for="name">Your name</label>
+      <input type="text" id="name" name="name" class="form-input" required
+             value="{{ name or '' }}" placeholder="e.g. Pat Smith" autocomplete="name">
+    </div>
+
+    <div class="form-group">
+      <label for="email">Your email</label>
+      <input type="email" id="email" name="email" class="form-input" required
+             value="{{ email or '' }}" placeholder="you@example.com" autocomplete="email">
+      <div class="form-help">Used to identify your acknowledgment record. Never sold or shared.</div>
+    </div>
+
+    <div class="checkbox-group">
+      <input type="checkbox" id="accepted" name="accepted" required>
+      <label for="accepted">I have read and agree to the six points above. I understand this tool is not advice and that I am responsible for my own decisions.</label>
+    </div>
+
+    <div style="margin-top: 24px; display: flex; gap: 16px; align-items: center;">
+      <button type="submit" class="btn btn-primary btn-large">Continue →</button>
+      <a href="{{ url_for('index') }}" class="btn btn-ghost">Back</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

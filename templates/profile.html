@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Your Profile — Cipher Lens{% endblock %}
+
+{% block content %}
+<div class="lens-narrow">
+  <div class="hero-eyebrow">STEP 02 · OPTIONAL</div>
+  <h1>Tell us a bit about <em>you</em>.</h1>
+  <p class="lead">
+    These four questions help us understand who's using Cipher Lens.
+    Your answers help shape what we build next.
+    <strong style="color: var(--text);">Optional</strong> — you can skip and go straight to the tool.
+  </p>
+
+  <form method="POST" action="{{ url_for('profile') }}">
+    <div class="form-group">
+      <label>Investing experience</label>
+      <div class="form-radio-group">
+        {% for value, label in [
+          ('new', 'New to investing (< 1 year)'),
+          ('some', 'Some experience (1–5 years)'),
+          ('experienced', 'Experienced (5+ years)'),
+        ] %}
+        <label class="form-radio-option">
+          <input type="radio" name="experience" value="{{ value }}"
+                 {% if profile.experience == value %}checked{% endif %}>
+          <span>{{ label }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Typical position size</label>
+      <div class="form-radio-group">
+        {% for value, label in [
+          ('under_1k', 'Under $1,000'),
+          ('1k_10k', '$1,000 – $10,000'),
+          ('10k_50k', '$10,000 – $50,000'),
+          ('over_50k', 'Over $50,000'),
+        ] %}
+        <label class="form-radio-option">
+          <input type="radio" name="position_size" value="{{ value }}"
+                 {% if profile.position_size == value %}checked{% endif %}>
+          <span>{{ label }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>How often do you trade?</label>
+      <div class="form-radio-group">
+        {% for value, label in [
+          ('rarely', 'Rarely (a few times a year)'),
+          ('monthly', 'Monthly'),
+          ('weekly', 'Weekly'),
+          ('daily', 'Daily'),
+        ] %}
+        <label class="form-radio-option">
+          <input type="radio" name="frequency" value="{{ value }}"
+                 {% if profile.frequency == value %}checked{% endif %}>
+          <span>{{ label }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Primary goal using this tool</label>
+      <div class="form-radio-group">
+        {% for value, label in [
+          ('learning', 'Learning about investing'),
+          ('ideas', 'Finding stock ideas to research further'),
+          ('validating', 'Validating stocks I already plan to buy'),
+          ('other', 'Other'),
+        ] %}
+        <label class="form-radio-option">
+          <input type="radio" name="goal" value="{{ value }}"
+                 {% if profile.goal == value %}checked{% endif %}>
+          <span>{{ label }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div style="margin-top: 24px; display: flex; gap: 16px; align-items: center;">
+      <button type="submit" class="btn btn-primary">Save and continue →</button>
+      <button type="submit" name="skip" value="1" class="btn btn-ghost">Skip for now</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
