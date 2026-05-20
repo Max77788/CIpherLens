@@ -105,9 +105,9 @@
 .roadmap-section { margin: 24px 0 48px; }
 .roadmap-item {
   display: grid;
-  grid-template-columns: 110px 1fr;
-  gap: 24px;
-  padding: 20px 0;
+  grid-template-columns: 220px 1fr;
+  gap: 28px;
+  padding: 24px 0;
   border-bottom: 1px solid var(--border-soft);
   align-items: start;
 }
@@ -126,7 +126,7 @@
 .status-soon { background: var(--accent-soft); color: var(--accent); }
 .status-considering { background: var(--gray-soft); color: var(--text-dim); }
 .roadmap-item h3 { margin: 0 0 8px; font-size: 18px; }
-.roadmap-item p { margin: 0; color: var(--text-dim); font-size: 14.5px; }
+.roadmap-item p { margin: 0; color: var(--text-dim); font-size: 14.5px; max-width: none; }
 
 .not-grid {
   display: grid;
@@ -134,7 +134,7 @@
   gap: 16px;
   margin: 24px 0 48px;
 }
-@media (max-width: 600px) {
+@media (max-width: 780px) {
   .not-grid { grid-template-columns: 1fr; }
   .roadmap-item { grid-template-columns: 1fr; gap: 8px; }
 }
