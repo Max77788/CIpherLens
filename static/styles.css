@@ -3,6 +3,8 @@
    Aesthetic: dark editorial finance. Calm, confident, refined.
    ========================================================== */
 
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
 :root {
   --bg: #0f1419;
   --bg-2: #161b22;
@@ -124,7 +126,7 @@ a:hover { border-bottom-color: var(--accent); }
   padding: 0 24px 80px;
 }
 .lens-narrow {
-  max-width: 780px;
+  max-width: 640px;
   margin: 0 auto;
 }
 

@@ -1,117 +1,432 @@
 {% extends "base.html" %}
-{% block title %}Roadmap — Cipher Lens{% endblock %}
+{% block title %}Roadmap & Community Ideas — Cipher Lens{% endblock %}
 
 {% block content %}
 <div class="lens-narrow">
-  <div class="hero-eyebrow">WHERE THIS IS GOING</div>
-  <h1>Cipher Lens is <em>v0.1</em>.</h1>
+  <div class="hero-eyebrow">WHERE THIS IS GOING — AND WHERE YOU COME IN</div>
+  <h1>The <em>roadmap</em> is a conversation.</h1>
   <p class="lead">
-    What you're using right now is a working beta — built fast, intentionally narrow in scope, sharpened by real feedback from the people testing it.
-    Here's what's being considered for what comes next. Nothing here is promised — these are candidates, not commitments. The actual roadmap will be shaped by what users actually want.
+    Cipher Lens is v0.1 — built fast, intentionally narrow, sharpened by real feedback.
+    This page is two-way: <strong style="color: var(--text);">Planned Roadmap</strong> is what's being built next,
+    and <strong style="color: var(--text);">Community Ideas</strong> is what you'd like to see.
+    Vote, comment, suggest. The items with the most traction move up.
   </p>
 
-  <div class="disclaimer-box" style="margin: 32px 0;">
-    <h3>How decisions get made</h3>
+  <div class="disclaimer-box" style="margin: 24px 0 32px;">
+    <h3>How it works</h3>
     <p style="margin: 0;">
-      Cipher Lens isn't built to a roadmap from on high. It's built by an individual investor who's
-      iterating in public. If something on this list resonates — say so. If something is missing
-      that you'd actually use — say that too. The signal that moves an item from "considered" to
-      "shipping" is real users asking for it.
+      Vote on the items you'd actually use. Drop a comment to explain why or how you'd use it —
+      that's often more valuable than the vote itself. Submit new ideas at the bottom.
+      Ideas that gain traction get promoted to the Planned Roadmap.
     </p>
   </div>
 
-  <h2>Currently being considered</h2>
-
-  <div class="roadmap-section">
-    <div class="roadmap-item">
-      <div class="roadmap-status status-soon">SOON</div>
-      <h3>Watchlists</h3>
-      <p>Save the tickers you care about. Re-score on demand without re-pasting every time. Persistent across sessions and devices.</p>
+  {% if not acknowledged %}
+    <div class="error-box" style="margin-bottom: 24px;">
+      You can browse the roadmap, but you'll need to <a href="{{ url_for('acknowledgment') }}">complete the acknowledgment</a> to vote, comment, or submit ideas.
     </div>
+  {% endif %}
 
-    <div class="roadmap-item">
-      <div class="roadmap-status status-soon">SOON</div>
-      <h3>Bring your own API key</h3>
-      <p>Currently everyone shares the same data source with shared rate limits. Bring your own Finnhub or Alpha Vantage key (both have free tiers) and run as many scans as you want.</p>
-    </div>
-
-    <div class="roadmap-item">
-      <div class="roadmap-status status-considering">CONSIDERING</div>
-      <h3>Score history</h3>
-      <p>See how a stock's score has changed over the last few weeks. Was it green a month ago and now red? That's a story worth knowing before you act.</p>
-    </div>
-
-    <div class="roadmap-item">
-      <div class="roadmap-status status-considering">CONSIDERING</div>
-      <h3>Discovery mode</h3>
-      <p>Instead of pasting a list you already have, describe what you're looking for ("large-cap tech with a tailwind, no earnings in the next month") and get a starting list to research.</p>
-    </div>
-
-    <div class="roadmap-item">
-      <div class="roadmap-status status-considering">CONSIDERING</div>
-      <h3>Educational deep dives</h3>
-      <p>Short writeups on what each scoring category really means, the kinds of mistakes new investors make, and how to think about the signals the framework checks. Built into the tool, not buried in a blog.</p>
-    </div>
-
-    <div class="roadmap-item">
-      <div class="roadmap-status status-considering">CONSIDERING</div>
-      <h3>Mobile-optimized layout</h3>
-      <p>The current design is desktop-first. Works on mobile, but a layout designed for phones — quick scans during the day, compact cards, single-thumb navigation — is on the list.</p>
-    </div>
+  <!-- ============================================================
+       SECTION 1 — PLANNED ROADMAP
+       ============================================================ -->
+  <div class="section-header">
+    <h2 style="margin-bottom: 4px;">Planned Roadmap</h2>
+    <p class="muted small" style="margin: 0; max-width: 65ch;">
+      Features being actively considered or built. Sorted by votes — your voice moves the order.
+      <strong style="color: var(--text);">SOON</strong> = next up. <strong style="color: var(--text);">CONSIDERING</strong> = on the list, not yet committed.
+    </p>
   </div>
 
-  <h2>What Cipher Lens is NOT going to become</h2>
+  <div class="feedback-list">
+    {% for item in roadmap_items %}
+    <div class="feedback-card" data-item-id="{{ item.id }}" data-section="roadmap">
+      <div class="feedback-card-main">
+        <div class="vote-col">
+          <button class="vote-btn {% if item.has_voted %}voted{% endif %}"
+                  onclick="toggleVote('{{ item.id }}')"
+                  {% if not acknowledged %}disabled title="Acknowledge terms to vote"{% endif %}>
+            <span class="vote-arrow">▲</span>
+            <span class="vote-count" id="vc-{{ item.id }}">{{ item.vote_count }}</span>
+          </button>
+        </div>
+        <div class="feedback-card-body">
+          <div class="feedback-card-header">
+            <h3>{{ item.title }}</h3>
+            {% if item.status_label %}
+              <span class="roadmap-status status-{{ item.status_label|lower }}">{{ item.status_label }}</span>
+            {% endif %}
+          </div>
+          <p class="feedback-card-desc">{{ item.description }}</p>
+          <div class="feedback-card-actions">
+            <button class="link-btn" onclick="toggleComments('{{ item.id }}')">
+              💬 <span id="cc-{{ item.id }}">{{ item.comment_count }}</span> {% if item.comment_count == 1 %}comment{% else %}comments{% endif %}
+            </button>
+            {% if item.submitted_by_name %}
+              <span class="feedback-meta muted smaller">Suggested by {{ item.submitted_by_name }}</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="feedback-comments" id="comments-{{ item.id }}" style="display: none;">
+        <div class="comment-list" id="comment-list-{{ item.id }}">
+          {% for c in item.comments %}
+          <div class="comment">
+            <div class="comment-header">
+              <span class="comment-author">{{ c.author_name }}</span>
+              <span class="comment-date muted smaller">{{ c.created_at_utc }}</span>
+            </div>
+            <div class="comment-text">{{ c.text }}</div>
+          </div>
+          {% endfor %}
+        </div>
+        {% if acknowledged %}
+        <div class="comment-form">
+          <textarea id="ct-{{ item.id }}" class="form-textarea" rows="2"
+                    placeholder="Add a comment — what would you use this for? Any nuance?"
+                    maxlength="1000"></textarea>
+          <button class="btn btn-primary btn-sm" onclick="submitComment('{{ item.id }}')">Post comment</button>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
 
+  <!-- ============================================================
+       SECTION 2 — COMMUNITY IDEAS
+       ============================================================ -->
+  <div class="section-header" style="margin-top: 56px;">
+    <h2 style="margin-bottom: 4px;">Community Ideas</h2>
+    <p class="muted small" style="margin: 0; max-width: 65ch;">
+      Suggestions from people using Cipher Lens. Vote on the ones you'd want too. Add new ones at the bottom.
+      Ideas with traction get promoted into the Planned Roadmap above.
+    </p>
+  </div>
+
+  <div class="feedback-list">
+    {% if ideas|length == 0 %}
+      <div class="results-empty">
+        No community ideas yet. <strong style="color: var(--text);">Be the first</strong> — submit one below.
+      </div>
+    {% endif %}
+
+    {% for item in ideas %}
+    <div class="feedback-card" data-item-id="{{ item.id }}" data-section="ideas">
+      <div class="feedback-card-main">
+        <div class="vote-col">
+          <button class="vote-btn {% if item.has_voted %}voted{% endif %}"
+                  onclick="toggleVote('{{ item.id }}')"
+                  {% if not acknowledged %}disabled title="Acknowledge terms to vote"{% endif %}>
+            <span class="vote-arrow">▲</span>
+            <span class="vote-count" id="vc-{{ item.id }}">{{ item.vote_count }}</span>
+          </button>
+        </div>
+        <div class="feedback-card-body">
+          <div class="feedback-card-header">
+            <h3>{{ item.title }}</h3>
+            <span class="roadmap-status status-new">NEW</span>
+            {% if is_admin %}
+              <button class="btn btn-ghost btn-sm admin-action"
+                      onclick="promoteIdea('{{ item.id }}')"
+                      title="Move this idea to the Planned Roadmap">
+                ⤴ Promote to Roadmap
+              </button>
+            {% endif %}
+          </div>
+          <p class="feedback-card-desc">{{ item.description }}</p>
+          <div class="feedback-card-actions">
+            <button class="link-btn" onclick="toggleComments('{{ item.id }}')">
+              💬 <span id="cc-{{ item.id }}">{{ item.comment_count }}</span> {% if item.comment_count == 1 %}comment{% else %}comments{% endif %}
+            </button>
+            <span class="feedback-meta muted smaller">
+              Suggested by {{ item.submitted_by_name or 'Anonymous' }}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="feedback-comments" id="comments-{{ item.id }}" style="display: none;">
+        <div class="comment-list" id="comment-list-{{ item.id }}">
+          {% for c in item.comments %}
+          <div class="comment">
+            <div class="comment-header">
+              <span class="comment-author">{{ c.author_name }}</span>
+              <span class="comment-date muted smaller">{{ c.created_at_utc }}</span>
+            </div>
+            <div class="comment-text">{{ c.text }}</div>
+          </div>
+          {% endfor %}
+        </div>
+        {% if acknowledged %}
+        <div class="comment-form">
+          <textarea id="ct-{{ item.id }}" class="form-textarea" rows="2"
+                    placeholder="Add a comment — what would you use this for? Any nuance?"
+                    maxlength="1000"></textarea>
+          <button class="btn btn-primary btn-sm" onclick="submitComment('{{ item.id }}')">Post comment</button>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- ============================================================
+       NEW IDEA FORM
+       ============================================================ -->
+  {% if acknowledged %}
+  <div class="new-idea-card" style="margin-top: 40px;">
+    <h3 style="margin-top: 0;">Have a new idea?</h3>
+    <p class="muted small" style="margin-bottom: 16px;">
+      Suggest something the framework doesn't do yet but you wish it did. Be specific — describe how you'd use it.
+    </p>
+    <div class="form-group">
+      <label for="new-idea-title">Title</label>
+      <input type="text" id="new-idea-title" class="form-input" maxlength="120"
+             placeholder="e.g. Earnings-aware scoring with after-the-fact adjustment">
+    </div>
+    <div class="form-group">
+      <label for="new-idea-desc">Description</label>
+      <textarea id="new-idea-desc" class="form-textarea" rows="4" maxlength="2000"
+                placeholder="What does it do, who would use it, why does it matter?"></textarea>
+    </div>
+    <button class="btn btn-primary" onclick="submitIdea()">Submit idea</button>
+  </div>
+  {% endif %}
+
+  <!-- ============================================================
+       ADMIN UNLOCK
+       ============================================================ -->
+  {% if acknowledged %}
+  <div class="admin-strip" style="margin-top: 56px;">
+    {% if is_admin %}
+      <span class="admin-badge">🔓 Admin mode enabled</span>
+      <button class="link-btn" onclick="lockAdmin()">Disable</button>
+    {% else %}
+      <button class="link-btn admin-link" onclick="promptAdmin()">
+        🔒 Admin access
+      </button>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <h2 style="margin-top: 56px;">What Cipher Lens is NOT going to become</h2>
   <p style="color: var(--text-dim); max-width: 65ch;">
     Some features sound useful but cross lines that change what this tool is.
     These are explicitly off the roadmap:
   </p>
-
   <div class="not-grid">
     <div class="not-card">
       <h3>Buy / sell recommendations</h3>
       <p>Cipher Lens will never tell you to buy or sell a specific stock. That's investment advice — which requires a license, a fiduciary relationship, and a different posture toward your money.</p>
     </div>
-
     <div class="not-card">
       <h3>Personalized portfolio tracking</h3>
       <p>Logging your trades, tracking P&amp;L, surfacing exit signals — these belong in a system that knows your specific situation. Cipher Lens stays at the screening level.</p>
     </div>
-
     <div class="not-card">
       <h3>Real-time price feeds</h3>
       <p>Data comes from public sources, delayed 15–20 minutes during market hours. Building a real-time data pipeline costs serious money and creates expectations Cipher Lens isn't trying to meet.</p>
     </div>
-
     <div class="not-card">
       <h3>Backtesting</h3>
       <p>Showing "if you'd used this framework last year you'd have made X%" is technically possible and emotionally compelling — and statistically misleading. Past performance is not predictive, and we won't pretend otherwise.</p>
     </div>
   </div>
 
-  <h2>Have a suggestion?</h2>
-  <p style="color: var(--text-dim);">
-    Cipher Lens is in beta and small enough to actually respond to feedback. If you'd use a feature that isn't listed here — or if something on this list matters more to you than the others — let the maintainer know.
-    The list above is opinions, not promises. Real user demand changes the order.
-  </p>
-
-  <div style="margin-top: 40px; padding: 20px 24px; background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius);">
+  <div style="margin-top: 56px; padding: 20px 24px; background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius);">
     <div class="uppercase" style="margin-bottom: 8px;">Current version</div>
     <div style="font-family: var(--font-mono); font-size: 14px;">v0.1 · launched May 2026 · scoring engine only · acknowledgment-gated · audit logged</div>
   </div>
 </div>
 
 <style>
-.roadmap-section { margin: 24px 0 48px; }
-.roadmap-item {
+/* ===== Roadmap & Feedback styles ===== */
+.section-header { margin: 32px 0 20px; }
+
+.feedback-list { display: flex; flex-direction: column; gap: 12px; }
+
+.feedback-card {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color .15s;
+}
+.feedback-card:hover { border-color: var(--accent-line); }
+
+.feedback-card-main {
   display: grid;
-  grid-template-columns: 330px 1fr;
-  gap: 28px;
-  padding: 24px 0;
-  border-bottom: 1px solid var(--border-soft);
+  grid-template-columns: 64px 1fr;
+  gap: 16px;
+  padding: 18px 20px;
   align-items: start;
 }
-.roadmap-item:last-child { border-bottom: none; }
+
+.vote-col { display: flex; justify-content: center; padding-top: 4px; }
+
+.vote-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 52px;
+  padding: 8px 0;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+}
+.vote-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+.vote-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.vote-btn.voted {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.vote-arrow { font-size: 14px; line-height: 1; }
+.vote-count { font-size: 15px; line-height: 1; }
+
+.feedback-card-body { min-width: 0; }
+.feedback-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.feedback-card-header h3 { margin: 0; font-size: 17px; }
+.feedback-card-desc {
+  margin: 0 0 10px;
+  color: var(--text-dim);
+  font-size: 14.5px;
+  line-height: 1.55;
+}
+.feedback-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-family: var(--font-body);
+  font-size: 13px;
+  padding: 4px 0;
+  cursor: pointer;
+  border-bottom: 1px dashed transparent;
+  transition: color .15s, border-color .15s;
+}
+.link-btn:hover { color: var(--accent); border-bottom-color: var(--accent-line); }
+
+.btn-sm { padding: 6px 12px; font-size: 13px; }
+
+.status-new { background: var(--green-soft); color: var(--green); }
+.status-considering { background: var(--gray-soft); color: var(--text-dim); }
+.status-soon { background: var(--accent-soft); color: var(--accent); }
+
+/* Comments */
+.feedback-comments {
+  border-top: 1px solid var(--border-soft);
+  background: var(--bg-3);
+  padding: 16px 20px 18px 20px;
+}
+.comment-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
+.comment {
+  padding: 10px 14px;
+  background: var(--bg-2);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+}
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+.comment-author { font-weight: 600; font-size: 13px; color: var(--text); }
+.comment-text { font-size: 14px; color: var(--text-dim); line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; }
+
+.comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border-soft);
+}
+.comment-form .form-textarea { min-height: 56px; font-size: 14px; font-family: var(--font-body); }
+.comment-form .btn { align-self: flex-start; }
+
+/* New idea form */
+.new-idea-card {
+  padding: 24px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+}
+
+/* Admin */
+.admin-strip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--bg-2);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  font-size: 13px;
+}
+.admin-link { color: var(--text-muted); }
+.admin-badge {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent);
+  padding: 4px 10px;
+  background: var(--accent-soft);
+  border-radius: 30px;
+}
+.admin-action {
+  margin-left: auto;
+  font-size: 12px;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+
+/* "Not going to become" grid — preserved from old roadmap */
+.not-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 24px 0 48px;
+}
+@media (max-width: 600px) {
+  .not-grid { grid-template-columns: 1fr; }
+  .feedback-card-main { grid-template-columns: 56px 1fr; gap: 12px; padding: 14px; }
+}
+.not-card {
+  padding: 20px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--red);
+  border-radius: var(--radius);
+}
+.not-card h3 { font-size: 15px; margin: 0 0 8px; color: var(--red); }
+.not-card p { font-size: 13.5px; color: var(--text-dim); margin: 0; }
+
 .roadmap-status {
   font-family: var(--font-mono);
   font-size: 10px;
@@ -123,37 +438,161 @@
   text-transform: uppercase;
   width: fit-content;
 }
-.status-soon { background: var(--accent-soft); color: var(--accent); }
-.status-considering { background: var(--gray-soft); color: var(--text-dim); }
-.roadmap-item h3 { margin: 0 0 8px; font-size: 18px; }
-.roadmap-item p { margin: 0; color: var(--text-dim); font-size: 14.5px; max-width: none; }
-
-.not-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin: 24px 0 48px;
-}
-@media (max-width: 780px) {
-  .not-grid { grid-template-columns: 1fr; }
-  .roadmap-item { grid-template-columns: 1fr; gap: 8px; }
-}
-.not-card {
-  padding: 20px;
-  background: var(--bg-2);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--red);
-  border-radius: var(--radius);
-}
-.not-card h3 {
-  font-size: 15px;
-  margin: 0 0 8px;
-  color: var(--red);
-}
-.not-card p {
-  font-size: 13.5px;
-  color: var(--text-dim);
-  margin: 0;
-}
 </style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const ACKNOWLEDGED = {{ 'true' if acknowledged else 'false' }};
+
+function escapeHtml(s) {
+  if (s == null) return '';
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+async function toggleVote(itemId) {
+  if (!ACKNOWLEDGED) {
+    showToast('Please acknowledge the terms first to vote.', true);
+    return;
+  }
+  try {
+    const res = await fetch('/api/feedback/vote', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({item_id: itemId})
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Vote failed');
+
+    document.getElementById('vc-' + itemId).textContent = data.vote_count;
+    const card = document.querySelector('.feedback-card[data-item-id="' + itemId + '"]');
+    const btn = card.querySelector('.vote-btn');
+    if (data.has_voted) btn.classList.add('voted');
+    else btn.classList.remove('voted');
+  } catch (e) {
+    showToast(e.message, true);
+  }
+}
+
+function toggleComments(itemId) {
+  const el = document.getElementById('comments-' + itemId);
+  if (!el) return;
+  el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
+}
+
+async function submitComment(itemId) {
+  const ta = document.getElementById('ct-' + itemId);
+  if (!ta) return;
+  const text = (ta.value || '').trim();
+  if (!text) { showToast('Please write a comment.', true); return; }
+
+  try {
+    const res = await fetch('/api/feedback/comment', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({item_id: itemId, text: text})
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Comment failed');
+
+    // Append to list
+    const list = document.getElementById('comment-list-' + itemId);
+    const c = data.comment;
+    const html = `
+      <div class="comment">
+        <div class="comment-header">
+          <span class="comment-author">${escapeHtml(c.author_name)}</span>
+          <span class="comment-date muted smaller">${escapeHtml(c.created_at_utc)}</span>
+        </div>
+        <div class="comment-text">${escapeHtml(c.text)}</div>
+      </div>
+    `;
+    list.insertAdjacentHTML('beforeend', html);
+
+    // Update count
+    const cc = document.getElementById('cc-' + itemId);
+    if (cc) cc.textContent = data.comment_count;
+
+    // Clear textarea
+    ta.value = '';
+    showToast('Comment posted.');
+  } catch (e) {
+    showToast(e.message, true);
+  }
+}
+
+async function submitIdea() {
+  const titleEl = document.getElementById('new-idea-title');
+  const descEl = document.getElementById('new-idea-desc');
+  const title = (titleEl.value || '').trim();
+  const description = (descEl.value || '').trim();
+
+  if (title.length < 3) { showToast('Please give your idea a clear title.', true); return; }
+  if (description.length < 10) { showToast('Please describe your idea.', true); return; }
+
+  try {
+    const res = await fetch('/api/feedback/idea', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({title: title, description: description})
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Submit failed');
+
+    showToast('Idea submitted. Refreshing…');
+    setTimeout(() => location.reload(), 800);
+  } catch (e) {
+    showToast(e.message, true);
+  }
+}
+
+async function promoteIdea(itemId) {
+  if (!confirm('Promote this idea to the Planned Roadmap?')) return;
+  try {
+    const res = await fetch('/api/feedback/promote', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({item_id: itemId})
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Promote failed');
+
+    showToast('Promoted. Refreshing…');
+    setTimeout(() => location.reload(), 800);
+  } catch (e) {
+    showToast(e.message, true);
+  }
+}
+
+async function promptAdmin() {
+  const pw = prompt('Enter admin password to unlock idea promotion:');
+  if (!pw) return;
+  try {
+    const res = await fetch('/api/feedback/unlock', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({password: pw})
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Unlock failed');
+
+    showToast('Admin mode enabled.');
+    setTimeout(() => location.reload(), 600);
+  } catch (e) {
+    showToast(e.message, true);
+  }
+}
+
+async function lockAdmin() {
+  try {
+    await fetch('/api/feedback/lock', {method: 'POST'});
+    showToast('Admin mode disabled.');
+    setTimeout(() => location.reload(), 400);
+  } catch (e) {
+    showToast('Failed to lock', true);
+  }
+}
+</script>
 {% endblock %}
